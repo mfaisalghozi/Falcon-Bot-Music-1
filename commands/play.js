@@ -2,6 +2,7 @@ const { play } = require("../include/play");
 const { YOUTUBE_API_KEY } = require("../config.json");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
+const { MessageEmbed } = require("discord.js");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
 
 module.exports = {
@@ -58,7 +59,8 @@ module.exports = {
         song = {
           title: songInfo.videoDetails.title,
           url: songInfo.videoDetails.video_url,
-          duration: songInfo.videoDetails.lengthSeconds
+          duration: songInfo.videoDetails.lengthSeconds,
+          uploader: songInfo.videoDetails.author.name
         };
       } catch (error) {
         if (error.message.includes("copyright")) {
@@ -77,7 +79,8 @@ module.exports = {
         song = {
           title: songInfo.videoDetails.title,
           url: songInfo.videoDetails.video_url,
-          duration: songInfo.videoDetails.lengthSeconds
+          duration: songInfo.videoDetails.lengthSeconds,
+          uploader: songInfo.videoDetails.author.name
         };
       } catch (error) {
         console.error(error);
@@ -86,9 +89,12 @@ module.exports = {
     }
 
     if (serverQueue) {
+      let queueEmbed = new MessageEmbed()
+      .setDescription(`✅ **[${song.title}](${song.url})** has been added to the queue by **${message.author.username}**`)
+      .setColor('#4dffe7')
       serverQueue.songs.push(song);
       return serverQueue.textChannel
-        .send(`✅ **${song.title}** has been added to the queue by ${message.author}`)
+        .send(queueEmbed)
         .catch(console.error);
     }
 

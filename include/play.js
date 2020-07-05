@@ -1,7 +1,7 @@
 const ytdlDiscord = require("ytdl-core-discord");
 const { canModifyQueue } = require("../util/EvobotUtil");
 const { MessageEmbed, Util } = require("discord.js");
-const { getVideoID, getURLVideoID } = require("ytdl-core-discord");
+const ytdl = require('ytdl-core')
 const { util } = require("simple-youtube-api");
 
 
@@ -63,11 +63,24 @@ module.exports = {
     dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
     try {
+      let songID = ytdl.getVideoID(`${song.url}`)
       let ytEmbed = new MessageEmbed()
   
-      .setTitle('FALCON MUSIC')
-      .setDescription(`🎶 Started playing: **[${song.title}](${song.url})**`)
-      .setImage(`https://cdn.discordapp.com/attachments/722032031810191400/723802137326387231/chill.png`);
+      .setTitle('Falcon Music')
+      .setDescription(`⏭️: \`\`Skip\`\` | ⏹️: \`\`Stop\`\` | 🔁: \`\`Loop\`\` | ⏯️: \`\`Play/Pause\`\``)
+      .setImage(`http://i3.ytimg.com/vi/${songID}/maxresdefault.jpg`)
+      .setTimestamp()
+      .setColor('#4dffe7')
+      .addField("Music", `**[${song.title}](${song.url})**`)
+      .addFields({
+        name: 'Duration',
+        value: `${(new Date(song.duration * 1000).toISOString().substr(11, 8))}`,
+        inline: true
+      }, {
+        name: 'Uploaded by',
+        value: `${song.uploader}`,
+        inline: true
+      },)
       
 
       var playingMessage = await queue.textChannel.send(ytEmbed);
