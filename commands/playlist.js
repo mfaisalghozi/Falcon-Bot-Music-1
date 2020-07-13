@@ -1,6 +1,13 @@
-const { MessageEmbed } = require("discord.js");
-const { play } = require("../include/play");
-const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE } = require("../config.json");
+const {
+  MessageEmbed
+} = require("discord.js");
+const {
+  play
+} = require("../include/play");
+const {
+  YOUTUBE_API_KEY,
+  MAX_PLAYLIST_SIZE
+} = require("../config.json");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
 
@@ -10,8 +17,12 @@ module.exports = {
   aliases: ["pl"],
   description: "Play a playlist from youtube",
   async execute(message, args) {
-    const { PRUNING } = require("../config.json");
-    const { channel } = message.member.voice;
+    const {
+      PRUNING
+    } = require("../config.json");
+    const {
+      channel
+    } = message.member.voice;
 
     const serverQueue = message.client.queue.get(message.guild.id);
     if (serverQueue && channel !== message.guild.me.voice.channel)
@@ -50,17 +61,25 @@ module.exports = {
 
     if (urlValid) {
       try {
-        playlist = await youtube.getPlaylist(url, { part: "snippet" });
-        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, { part: "snippet" });
+        playlist = await youtube.getPlaylist(url, {
+          part: "snippet"
+        });
+        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, {
+          part: "snippet"
+        });
       } catch (error) {
         console.error(error);
         return message.reply("Playlist not found :(").catch(console.error);
       }
     } else {
       try {
-        const results = await youtube.searchPlaylists(search, 1, { part: "snippet" });
+        const results = await youtube.searchPlaylists(search, 1, {
+          part: "snippet"
+        });
         playlist = results[0];
-        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, { part: "snippet" });
+        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, {
+          part: "snippet"
+        });
       } catch (error) {
         console.error(error);
         return message.reply("Playlist not found :(").catch(console.error);
@@ -78,8 +97,8 @@ module.exports = {
         serverQueue.songs.push(song);
         if (!PRUNING)
           message.channel
-            .send(`✅ **${song.title}** has been added to the queue by ${message.author}`)
-            .catch(console.error);
+          .send(`✅ **${song.title}** has been added to the queue by ${message.author}`)
+          .catch(console.error);
       } else {
         queueConstruct.songs.push(song);
       }
@@ -95,7 +114,7 @@ module.exports = {
       playlistEmbed.setDescription(queueConstruct.songs.map((song, index) => `${index + 1}. ${song.title}`));
       if (playlistEmbed.description.length >= 2048)
         playlistEmbed.description =
-          playlistEmbed.description.substr(0, 2007) + "\nPlaylist larger than character limit...";
+        playlistEmbed.description.substr(0, 2007) + "\nPlaylist larger than character limit...";
     }
 
     message.channel.send(`${message.author} Started a playlist`, playlistEmbed);
